@@ -72,11 +72,69 @@
       user-select: none;
       pointer-events: none;
       animation: fall linear infinite;
+      cursor: grab;
+    }
+
+    .snowflake:active {
+      cursor: grabbing;
     }
 
     @keyframes fall {
       to {
         transform: translateY(100vh); /* Fall to the bottom of the screen */
+      }
+    }
+
+    /* Mobile Responsiveness */
+    @media (max-width: 768px) {
+      h1 {
+        font-size: 2rem;
+      }
+
+      p {
+        font-size: 1.2rem;
+      }
+
+      button {
+        font-size: 1rem;
+        padding: 8px 16px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      h1 {
+        font-size: 1.5rem;
+      }
+
+      p {
+        font-size: 1rem;
+      }
+
+      button {
+        font-size: 0.9rem;
+        padding: 6px 12px;
+      }
+    }
+
+    /* Sparkle Styles */
+    .sparkle {
+      position: absolute;
+      width: 10px;
+      height: 10px;
+      background-color: gold;
+      border-radius: 50%;
+      box-shadow: 0 0 10px rgba(255, 223, 0, 0.8);
+      animation: sparkle-animation 0.8s ease-out forwards;
+    }
+
+    @keyframes sparkle-animation {
+      0% {
+        opacity: 1;
+        transform: scale(0.5) translateY(0);
+      }
+      100% {
+        opacity: 0;
+        transform: scale(1.5) translateY(-50px);
       }
     }
   </style>
@@ -139,6 +197,24 @@
       }
 
       playMelody(now);
+
+      // Sparkle Effect
+      const startButton = document.getElementById('startButton');
+      const sparkleEffect = (e) => {
+        for (let i = 0; i < 10; i++) {
+          const sparkle = document.createElement('div');
+          sparkle.classList.add('sparkle');
+          document.body.appendChild(sparkle);
+          const x = e.clientX + Math.random() * 30 - 15;
+          const y = e.clientY + Math.random() * 30 - 15;
+          sparkle.style.left = `${x}px`;
+          sparkle.style.top = `${y}px`;
+
+          setTimeout(() => sparkle.remove(), 800); // Remove sparkle after animation
+        }
+      };
+
+      startButton.addEventListener('click', sparkleEffect);
     });
 
     // Holiday Emojis Array (Snowflake, Snowman, Christmas Tree, Hanukkah, Gingerbread)
@@ -152,6 +228,7 @@
 
       const snowflake = document.createElement("div");
       snowflake.classList.add("snowflake");
+      snowflake.setAttribute('draggable', 'true'); // Enable dragging
 
       // Randomly select a holiday emoji
       snowflake.innerText = holidayEmojis[Math.floor(Math.random() * holidayEmojis.length)];
@@ -174,6 +251,25 @@
       snowflake.addEventListener("animationend", () => {
         snowflake.remove();
         snowflakeCount--;
+      });
+
+      // Enable dragging functionality
+      snowflake.addEventListener('dragstart', (e) => {
+        const offsetX = e.clientX - snowflake.getBoundingClientRect().left;
+        const offsetY = e.clientY - snowflake.getBoundingClientRect().top;
+
+        const onDragMove = (moveEvent) => {
+          snowflake.style.left = `${moveEvent.clientX - offsetX}px`;
+          snowflake.style.top = `${moveEvent.clientY - offsetY}px`;
+        };
+
+        const onDragEnd = () => {
+          window.removeEventListener('mousemove', onDragMove);
+          window.removeEventListener('mouseup', onDragEnd);
+        };
+
+        window.addEventListener('mousemove', onDragMove);
+        window.addEventListener('mouseup', onDragEnd);
       });
     }
 
