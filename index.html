@@ -10,7 +10,10 @@
     /* General Page Styles */
     body {
       font-family: 'Cinzel', serif;
-      background-color: lightblue;
+      background-image: url('https://www.americamagazine.org/sites/default/files/main_image/mcd-charliebrown.jpg'); /* Background image */
+      background-size: cover;
+      background-position: top center;
+      background-repeat: repeat;
       color: #8b0000;
       text-align: center;
       margin: 0;
@@ -21,14 +24,14 @@
     h1 {
       font-size: 3rem;
       color: #b22222;
-      margin-top: 60px;
+      margin-top: 70px;
       text-shadow: 2px 2px 5px #dc143c;
     }
 
     p {
       font-size: 1.5rem;
       margin-bottom: 40px;
-      color: #228b22;
+      color: #fff;
     }
 
     button {
@@ -55,15 +58,42 @@
     }
 
     footer {
-      margin-top: 40px;
+      position: fixed;
+      bottom: 0;
+       width: 100%;
       font-size: 1rem;
       font-family: Arial, Helvetica, sans-serif;
-      color: #555;
+      color: #fff;
+      background-color: darkgreen;
+      padding: 10px;
+      text-align: center; 
     }
 
+    /* Sparkle Styles */
+    .sparkle {
+      position: absolute;
+      width: 10px;
+      height: 10px;
+      background-color: gold;
+      border-radius: 50%;
+      box-shadow: 0 0 10px rgba(255, 223, 0, 0.8);
+      animation: sparkle-animation 0.8s ease-out forwards;
+    }
+
+    @keyframes sparkle-animation {
+      0% {
+        opacity: 1;
+        transform: scale(0.5) translateY(0);
+      }
+      100% {
+        opacity: 0;
+        transform: scale(1.5) translateY(-50px);
+      }
+    }
+    
     /* Snowflake Styles */
     .snowflake {
-      position: fixed;
+      position: absolute; /* Position absolutely to make dragging easier */
       top: -10px; /* Start just above the screen */
       left: 0;
       color: #ffffff;
@@ -89,7 +119,17 @@
   <button id="startButton">Thanks!</button>
   <footer>Season's greetings ❤️ from HEATER / Heather Wang</footer>
 
+ <!-- Background Music -->
+ <audio id="background-music" loop autoplay>
+  <source src="https://drive.google.com/uc?export=download&id=16sipjMIkHaKTdhClUIyZ2lN4uzdQVZ46" type="audio/mp3">
+  Your browser does not support the audio element.
+</audio>
+
   <script>
+    // Set background music volume
+    const backgroundMusic = document.getElementById('background-music');
+    backgroundMusic.volume = 0.2; // Low volume for background music
+
     // Tone.js Audio Setup
     const sampler = new Tone.Sampler({
       urls: {
@@ -101,6 +141,29 @@
       release: 1,
       baseUrl: "https://tonejs.github.io/audio/salamander/",
     }).toDestination();
+
+        document.getElementById("startButton").addEventListener("click", function (e) {
+      // Create a new sparkle element
+      const sparkle = document.createElement("div");
+      sparkle.classList.add("sparkle");
+
+      // Position the sparkle at the click location
+      const buttonRect = e.target.getBoundingClientRect();
+      const x = e.clientX - buttonRect.left;
+      const y = e.clientY - buttonRect.top;
+
+      sparkle.style.left = `${x - 10}px`;  // Adjust for positioning
+      sparkle.style.top = `${y - 10}px`;  // Adjust for positioning
+
+      // Add the sparkle to the button
+      e.target.appendChild(sparkle);
+
+      // Remove the sparkle after the animation completes
+      setTimeout(() => {
+        sparkle.remove();
+      }, 1000);  // Matches the animation duration (1 second)
+    });
+ 
 
     document.getElementById("startButton").addEventListener("click", async () => {
       await Tone.start();
@@ -143,8 +206,20 @@
       playMelody(now);
     });
 
+    document.getElementById("startButton").addEventListener("click", function (e) {
+      const sparkle = document.createElement("div");
+      sparkle.classList.add("sparkle");
+      const buttonRect = e.target.getBoundingClientRect();
+      const x = e.clientX - buttonRect.left;
+      const y = e.clientY - buttonRect.top;
+      sparkle.style.left = `${x - 5}px`;
+      sparkle.style.top = `${y - 5}px`;
+      e.target.appendChild(sparkle);
+      setTimeout(() => sparkle.remove(), 600);
+    });
+
     // Holiday Emojis Array (Snowflake, Snowman, Christmas Tree, Hanukkah, Gingerbread)
-    const holidayEmojis = ["❄", "⛄", "🎄", "🕎"];
+    const holidayEmojis = ["❄", "❄","❄","⛄","⛄","⛄", "🎄", "🎅", "🍪"];
     let snowflakeCount = 0;
     const maxSnowflakes = 10; // Limit the number of snowflakes at a time
 
@@ -202,9 +277,13 @@
       }
 
       function drag(e) {
+        // Prevent default behavior for touch
+        e.preventDefault();
+
         // Update snowflake position
-        const x = e.clientX - offsetX;
-        const y = e.clientY - offsetY;
+        const x = (e.clientX || e.touches[0].clientX) - offsetX;
+        const y = (e.clientY || e.touches[0].clientY) - offsetY;
+
         snowflake.style.left = `${x}px`;
         snowflake.style.top = `${y}px`;
       }
@@ -219,7 +298,7 @@
     }
 
     // Continuously generate snowflakes at a slower rate
-    setInterval(createSnowflake, 200); // Generate every 300ms
+    setInterval(createSnowflake, 200); // Generate every 200ms
   </script>
 </body>
 </html>
