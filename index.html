@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Happy Holidays from HEATER!</title>
+  <script src="https://cdn.jsdelivr.net/npm/tone@14.8.19/build/Tone.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel&display=swap" rel="stylesheet">
+  <style>
+    /* General Page Styles */
+    body {
+      font-family: 'Cinzel', serif;
+      background-color: lightblue;
+      color: #8b0000;
+      text-align: center;
+      margin: 0;
+      padding: 0;
+      overflow: hidden; /* Prevent page scrolling */
+    }
+
+    h1 {
+      font-size: 3rem;
+      color: #b22222;
+      margin-top: 60px;
+      text-shadow: 2px 2px 5px #dc143c;
+    }
+
+    p {
+      font-size: 1.5rem;
+      margin-bottom: 40px;
+      color: #228b22;
+    }
+
+    button {
+      background-color: #b22222;
+      font-family: 'Cinzel', serif; 
+      color: #fff;
+      font-size: 1.2rem;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      box-shadow: 3px 3px 5px rgba(0, 0, 0, 0.2);
+      transition: background-color 0.3s ease, transform 0.2s ease;
+    }
+
+    button:hover {
+      background-color: #8b0000;
+      font-family: 'Cinzel', serif; 
+      transform: scale(1.05);
+    }
+
+    button:active {
+      background-color: #6b0000;
+    }
+
+    footer {
+      margin-top: 40px;
+      font-size: 1rem;
+      font-family: Arial, Helvetica, sans-serif;
+      color: #555;
+    }
+
+    /* Snowflake Styles */
+    .snowflake {
+      position: fixed;
+      top: -10px; /* Start just above the screen */
+      left: 0;
+      color: #ffffff;
+      font-size: 1rem;
+      opacity: 0.8;
+      user-select: none;
+      pointer-events: none;
+      animation: fall linear infinite;
+    }
+
+    @keyframes fall {
+      to {
+        transform: translateY(100vh); /* Fall to the bottom of the screen */
+      }
+    }
+  </style>
+</head>
+<body>
+  <h1>Happy Holidays!</h1>
+  <p>Wishing you a cozy, joyous, restful 2024 holiday season!</p>
+  <button id="startButton">Thanks!</button>
+  <footer>Season's greetings ❤️ from HEATER / Heather Wang</footer>
+
+  <script>
+    // Tone.js Audio Setup
+    const sampler = new Tone.Sampler({
+      urls: {
+        C4: "C4.mp3",
+        "D#4": "Ds4.mp3",
+        "F#4": "Fs4.mp3",
+        A4: "A4.mp3",
+      },
+      release: 1,
+      baseUrl: "https://tonejs.github.io/audio/salamander/",
+    }).toDestination();
+
+    document.getElementById("startButton").addEventListener("click", async () => {
+      await Tone.start();
+      console.log("Audio context started!");
+
+      const now = Tone.now();
+      const swingTime = 0.5; // Slight delay for swing feel
+
+      const melody = [
+        { time: 0 * swingTime, note: "C3", type: "halfNote" },
+        { time: 1 * swingTime, note: ["F3", "A2"], type: "eighthNote" },
+        { time: 2 * swingTime, note: "F3", type: "eighthNote" },
+        { time: 3 * swingTime, note: ["F3", "A2"], type: "quarterNote" },
+        { time: 4 * swingTime, note: "G3", type: "tripletNote" },
+        { time: 5 * swingTime, note: "A3", type: "eighthNote" },
+        { time: 6 * swingTime, note: ["A3", "C3"], type: "eighthNote" },
+        { time: 6 * swingTime, note: ["A3", "C3", "E2"], type: "halfNote" },
+        { time: 6 * swingTime, note: "A3", type: "quarterNote" },
+        { time: 7 * swingTime, note: "G3", type: "eighthNote" },
+        { time: 8 * swingTime, note: "A3", type: "eighthNote" },
+        { time: 9 * swingTime, note: ["Bb3", "D2"], type: "quarterNote" },
+        { time: 10 * swingTime, note: ["E3", "G2"], type: "quarterNote" },
+        { time: 11 * swingTime, note: ["G3", "B2"], type: "halfNote" },
+        { time: 12 * swingTime, note: ["F3", "A2", "C2"], type: "halfNote" },
+      ];
+
+      function playMelody(time) {
+        melody.forEach((note, i) => {
+          let duration;
+          switch (note.type) {
+            case 'eighthNote': duration = '8n'; break;
+            case 'quarterNote': duration = '4n'; break;
+            case 'tripletNote': duration = '8n.'; break;
+            case 'halfNote': duration = '2n'; break;
+          }
+          sampler.triggerAttackRelease(note.note, duration, time + i * swingTime);
+        });
+      }
+
+      playMelody(now);
+    });
+
+    // Holiday Emojis Array (Snowflake, Snowman, Christmas Tree, Hanukkah, Gingerbread)
+    const holidayEmojis = ["❄", "⛄", "🎄", "🕎"];
+    let snowflakeCount = 0;
+    const maxSnowflakes = 10; // Limit the number of snowflakes at a time
+
+    // Snowflake Generator
+    function createSnowflake() {
+      if (snowflakeCount >= maxSnowflakes) return; // Limit snowflakes
+
+      const snowflake = document.createElement("div");
+      snowflake.classList.add("snowflake");
+
+      // Randomly select a holiday emoji
+      snowflake.innerText = holidayEmojis[Math.floor(Math.random() * holidayEmojis.length)];
+
+      document.body.appendChild(snowflake);
+
+      // Randomize position, size, and fall speed
+      const size = Math.random() * 1.7 + 1; // Snowflake size: 0.5rem to 2rem
+      const position = Math.random() * 100; // Random horizontal position
+      const duration = Math.random() * 5 + 4; // Fall duration: 3s to 8s
+
+      // Apply styles
+      snowflake.style.left = `${position}vw`;
+      snowflake.style.fontSize = `${size}rem`;
+      snowflake.style.animationDuration = `${duration}s`;
+
+      snowflakeCount++;
+
+      // Remove snowflake after animation
+      snowflake.addEventListener("animationend", () => {
+        snowflake.remove();
+        snowflakeCount--;
+      });
+    }
+
+    // Continuously generate snowflakes at a slower rate
+    setInterval(createSnowflake, 200); // Generate every 300ms
+  </script>
+</body>
+</html>
